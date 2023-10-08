@@ -35,4 +35,13 @@ corr_matrix = (train_X).corr()
 sns.heatmap(np.abs(corr_matrix))
 
 
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error
+model1 = RandomForestRegressor(n_estimators=30, random_state=50)
+model1.fit(train_X, train_y)
+model1_predictions = model1.predict(train_X)
+model1_train_mae = mean_absolute_error(model1_predictions, train_y)
+print("Model 1 training MAE is: ", round(model1_train_mae,2))
+
+
 
