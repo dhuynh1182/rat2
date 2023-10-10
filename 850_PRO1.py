@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import joblib
+import joblib as jb
 import sklearn as sk
 
 from sklearn.model_selection import StratifiedShuffleSplit
@@ -23,36 +23,88 @@ def data_processing(df):
     return scaled_data_df, train_y
 
     
-#importing data into Dataframe
+#STEP 1: importing data into Dataframe 
 df = pd.read_csv("Project 1 Data.csv")
 
+#STEP 2: displays data distrubution 
+sns.countplot(df, x = "Step")
+plt.show()
+
+#STEP 3: corr matrix of training data only to see corrolation betwn points
+corr_matrix = (df.drop(columns=["Step"])).corr()
+sns.heatmap(np.abs(corr_matrix))
+
+#STEP 4: 20, 80 split for testing, and training data.
 #prep for shuffle data
 split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=501)
-
 #splitting to 20% and 80% data
 for train_index ,test_index in split.split(df,df["Step"]):
     strat_train_set = df.loc[train_index].reset_index(drop=True)
     strat_test_set = df.loc[test_index].reset_index(drop=True)
 
+
 train_X,train_y = data_processing(strat_train_set)
-
-#corr matrix to see corrolation betwn points
-corr_matrix = (train_X).corr()
-sns.heatmap(np.abs(corr_matrix))
-
-
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import mean_absolute_error
-model1 = RandomForestRegressor(n_estimators=50, random_state=50)
-model1.fit(train_X, train_y)
-model1_predictions = model1.predict(train_X)
-model1_train_mae = mean_absolute_error(model1_predictions, train_y)
-print(model1_predictions)
-print("Model 1 training MAE is: ", round(model1_train_mae,5))
-
 test_X,test_y = data_processing(strat_test_set)
 
 
+#FOR GRID SEARCH PARAMETERS AND MODELS
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.svm import SVC
+
+
+
+# model 1 random forest
+m1 = RandomForestRegressor(random_state = 501)
+
+params1 = {
+    'n_estimators': [10,50,100],
+    'max_depth': [None,5,10,15],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'max_features': ['sqrt', 'log2']
+}
+
+print("\nrunning grid search for Random Forest Model")
+grid_search = GridSearchCV(m1, params1, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search.fit(train_X, train_y)
+best_params = grid_search.best_params_
+print("Best Hyperparameters:", best_params)
+best_model1 = grid_search.best_estimator_
+
+#model 2 Support vector machine
+m2 = SVC(random_state= 501)
+
+params2 = {
+    'C': [1,2,3,4,5],
+    'kernel': ['linear','rbf','poly','sigmoid'],
+    'gamma': ['scale','auto'],
+}
+
+print("\nrunning grid search for SVC Model")
+grid_search = GridSearchCV(m2, params2, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search.fit(train_X, train_y)
+best_params2 = grid_search.best_params_
+print("Best Hyperparameters:", best_params2)
+best_model2 = grid_search.best_estimator_
+
+#model 3 
+m3 = sk.tree.DecisionTreeClassifier(random_state = 501)
+
+params3 = {
+    'criterion': ['gini','entropy','log_loss'],
+    'splitter': ['best','random'],
+    'max_depth': [None,5,10,15],
+    'min_samples_split': [2, 5, 10],
+    'min_samples_leaf': [1, 2, 4],
+    'max_features': [1,'sqrt', 'log2']
+}
+print("\nrunning grid search for DTC Model")
+grid_search = GridSearchCV(m3, params3, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+grid_search.fit(train_X, train_y)
+best_params3 = grid_search.best_params_
+print("Best Hyperparameters:", best_params3)
+best_model2 = grid_search.best_estimator_
 
 
     
