@@ -22,6 +22,16 @@ def data_processing(df):
     
     return scaled_data_df, train_y
 
+from sklearn.metrics import accuracy_score, f1_score, precision_score
+
+#for performance analysis
+def getScores(true,pred):
+    print("Precision score: ", precision_score(true, pred, average= 'micro'))
+    print("Accuracy score: ", accuracy_score(true, pred))
+    print("F1 score: ",f1_score(true, pred, average= 'micro'))
+    
+    return None
+
     
 #STEP 1: importing data into Dataframe 
 df = pd.read_csv("Project 1 Data.csv")
@@ -54,23 +64,23 @@ from sklearn.svm import SVC
 
 
 
-# model 1 random forest
-m1 = RandomForestRegressor(random_state = 501)
+# # model 1 random forest
+# m1 = RandomForestRegressor(random_state = 501)
 
-params1 = {
-    'n_estimators': [10,50,100],
-    'max_depth': [None,5,10,15],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4],
-    'max_features': ['sqrt', 'log2']
-}
+# params1 = {
+#     'n_estimators': [10,50,100],
+#     'max_depth': [None,5,10,15],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4],
+#     'max_features': ['sqrt', 'log2']
+# }
 
-print("\nrunning grid search for Random Forest Model")
-grid_search = GridSearchCV(m1, params1, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
-grid_search.fit(train_X, train_y)
-best_params = grid_search.best_params_
-print("Best Hyperparameters:", best_params)
-best_model1 = grid_search.best_estimator_
+# print("\nrunning grid search for Random Forest Model")
+# grid_search = GridSearchCV(m1, params1, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+# grid_search.fit(train_X, train_y)
+# best_params = grid_search.best_params_
+# print("Best Hyperparameters:", best_params)
+# best_m1 = grid_search.best_estimator_
 
 #model 2 Support vector machine
 m2 = SVC(random_state= 501)
@@ -86,27 +96,40 @@ grid_search = GridSearchCV(m2, params2, cv=5, scoring='neg_mean_absolute_error',
 grid_search.fit(train_X, train_y)
 best_params2 = grid_search.best_params_
 print("Best Hyperparameters:", best_params2)
-best_model2 = grid_search.best_estimator_
+best_m2 = grid_search.best_estimator_
 
-#model 3 
-m3 = sk.tree.DecisionTreeClassifier(random_state = 501)
+# #model 3 
+# m3 = sk.tree.DecisionTreeClassifier(random_state = 501)
 
-params3 = {
-    'criterion': ['gini','entropy','log_loss'],
-    'splitter': ['best','random'],
-    'max_depth': [None,5,10,15],
-    'min_samples_split': [2, 5, 10],
-    'min_samples_leaf': [1, 2, 4],
-    'max_features': [1,'sqrt', 'log2']
-}
-print("\nrunning grid search for DTC Model")
-grid_search = GridSearchCV(m3, params3, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
-grid_search.fit(train_X, train_y)
-best_params3 = grid_search.best_params_
-print("Best Hyperparameters:", best_params3)
-best_model3 = grid_search.best_estimator_
+# params3 = {
+#     'criterion': ['gini','entropy','log_loss'],
+#     'splitter': ['best','random'],
+#     'max_depth': [None,5,10,15],
+#     'min_samples_split': [2, 5, 10],
+#     'min_samples_leaf': [1, 2, 4],
+#     'max_features': [1,'sqrt', 'log2']
+# }
+# print("\nrunning grid search for DTC Model")
+# grid_search = GridSearchCV(m3, params3, cv=5, scoring='neg_mean_absolute_error', n_jobs=-1)
+# grid_search.fit(train_X, train_y)
+# best_params3 = grid_search.best_params_
+# print("Best Hyperparameters:", best_params3)
+# best_m3 = grid_search.best_estimator_
 
+#step 5 performance
 
+#testing
+
+# best_m1.fit(train_X,train_y)
+# m1_pred = best_m1.predict(test_X).round()
+
+# getScores(test_y,m1_pred)
+
+best_m2.fit(train_X,train_y)
+m2_pred = best_m2.predict(test_X).round()
+
+print("\n~~scores for SVC model~~\n")
+getScores(test_y,m2_pred)
 
 
     
