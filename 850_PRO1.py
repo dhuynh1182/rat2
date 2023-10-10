@@ -104,7 +104,9 @@ grid_search = GridSearchCV(m3, params3, cv=5, scoring='neg_mean_absolute_error',
 grid_search.fit(train_X, train_y)
 best_params3 = grid_search.best_params_
 print("Best Hyperparameters:", best_params3)
-best_model2 = grid_search.best_estimator_
+best_model3 = grid_search.best_estimator_
+
+
 
 
     
