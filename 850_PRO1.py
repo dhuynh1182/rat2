@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import joblib as jb
-import sklearn as sk
+
 
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.preprocessing import StandardScaler
@@ -13,9 +13,10 @@ def extractor(df):
     # Extract the target variable (train_y) and features (df_X)
     y = df["Step"]
     X = df.drop(columns=["Step"])
+
     
     scaled_data = scaler.transform(X)
-    scaled_data_df = pd.DataFrame(scaled_data, columns=X.columns)
+    scaled_data_df = pd.DataFrame(scaled_data, columns= X.columns)
     
     return scaled_data_df, y
 
@@ -39,8 +40,30 @@ df = pd.read_csv("Project 1 Data.csv")
 sns.countplot(df, x = "Step")
 plt.show()
 
+# Create a figure and a 3D axis
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+
+# Create a 3D scatter plot with color-coded points based on "Step"
+sc = ax.scatter(df['X'], df['Y'], df['Z'], c=df['Step'], cmap='viridis', marker='o')
+
+# Add color bar
+cbar = plt.colorbar(sc,orientation='vertical', cax=fig.add_axes([0.85, 0.15, 0.03, 0.7]))
+
+cbar.set_label('Step')
+
+# Set axis labels
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
+ax.set_zlabel('Z')
+
+# Show the 3D plot
+plt.show()
+
+
+
 #STEP 3: corr matrix of training data only to see corrolation betwn points
-corr_matrix = (df.drop(columns=["Step"])).corr()
+corr_matrix = df.corr()
 sns.heatmap(np.abs(corr_matrix))
 
 #STEP 4: 20, 80 split for testing, and training data.
@@ -173,7 +196,7 @@ print("\n~~scores for logi model~~\n")
 getScores(test_y,m4_pred)
 
 
-#Based on the outputted scores, model 1: SVC is the best model, so a confusion matrix is
+#Based on the outputted scores, model 1: random forest is the best model, so a confusion matrix is
 #needed 
 cm = confusion_matrix(test_y, m1_pred)
 
@@ -183,4 +206,21 @@ disp.plot()
 #STEP 6:
 print("\ndumping model 2 into joblib file")
 jb.dump(best_m1,"best_model.joblib")
+
+real_data = [[9.375, 3.0625, 1.51],
+        [6.995, 5.125, 0.3875],
+        [0, 3.0625, 1.93],
+        [9.4, 3, 1.8],
+        [9.4, 3, 1.3]]
+real_data = pd.DataFrame(real_data, columns=['X', 'Y', 'Z'])
+scaled_r_data = scaler.transform(real_data)
+j = pd.DataFrame(scaled_r_data, columns=['X', 'Y', 'Z'])
+
+real_step = best_m1.predict(j)
+
+
+print("predicted steps:",real_step)
+
+
+
         
