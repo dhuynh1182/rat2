@@ -14,7 +14,10 @@ def extractor(df):
     y = df["Step"]
     X = df.drop(columns=["Step"])
     
-    return X, y
+    scaled_data = scaler.transform(X)
+    scaled_data_df = pd.DataFrame(scaled_data, columns=X.columns)
+    
+    return scaled_data_df, y
 
 
 
@@ -41,18 +44,14 @@ corr_matrix = (df.drop(columns=["Step"])).corr()
 sns.heatmap(np.abs(corr_matrix))
 
 #STEP 4: 20, 80 split for testing, and training data.
-#prep for shuffle data
-# Scaling the features
-y = df["Step"]
+
+#setting up  scalar stuff
 X = df.drop(columns=["Step"])
 scaler = StandardScaler()
 scaler.fit(X)
-scaled_data = scaler.transform(X)
-scaled_data_df = pd.DataFrame(scaled_data, columns=X.columns)
-print("scaled data")
 
-split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=501)
 #splitting to 20% and 80% data
+split = StratifiedShuffleSplit(n_splits=1, test_size=0.2, random_state=501)
 for train_index ,test_index in split.split(df,df["Step"]):
     strat_train_set = df.loc[train_index].reset_index(drop=True)
     strat_test_set = df.loc[test_index].reset_index(drop=True)
@@ -69,7 +68,7 @@ from sklearn.svm import SVC
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.linear_model import LogisticRegression
 
-#COMMENTED OUT FOR FASTER DEBUGGING
+
 #model 1 random forest
 m1 = RandomForestClassifier(random_state = 501)
 
@@ -94,7 +93,7 @@ best_m1 = grid_search.best_estimator_
 m2 = SVC(random_state= 501)
 
 params2 = {
-    'C': [1,2,3,4,5],
+    'C': [1,10,100],
     'kernel': ['linear','rbf','poly','sigmoid'],
     'gamma': ['scale','auto'],
 }
@@ -174,14 +173,14 @@ print("\n~~scores for logi model~~\n")
 getScores(test_y,m4_pred)
 
 
-#Based on the outputted scores, model 2: SVC is the best model, so a confusion matrix is
+#Based on the outputted scores, model 1: SVC is the best model, so a confusion matrix is
 #needed 
-cm = confusion_matrix(test_y, m2_pred)
+cm = confusion_matrix(test_y, m1_pred)
 
 disp = ConfusionMatrixDisplay(confusion_matrix = cm)
 disp.plot()
 
 #STEP 6:
 print("\ndumping model 2 into joblib file")
-jb.dump(best_m2,"best_model.joblib")
+jb.dump(best_m1,"best_model.joblib")
         
