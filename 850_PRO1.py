@@ -48,7 +48,7 @@ ax = fig.add_subplot(111, projection='3d')
 sc = ax.scatter(df['X'], df['Y'], df['Z'], c=df['Step'], cmap='viridis', marker='o')
 
 # Add color bar
-cbar = plt.colorbar(sc,orientation='vertical', cax=fig.add_axes([0.85, 0.15, 0.03, 0.7]))
+cbar = plt.colorbar(sc,orientation='vertical ', cax=fig.add_axes([0.85, 0.15, 0.03, 0.7]))
 
 cbar.set_label('Step')
 
@@ -218,7 +218,7 @@ j = pd.DataFrame(scaled_r_data, columns=real_data.columns)
 
 real_step = best_m1.predict(j)
 
-print("predicted steps:",real_step)
+print("Steps:",real_step)
 
 
 
