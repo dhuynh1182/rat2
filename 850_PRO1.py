@@ -37,9 +37,6 @@ df = pd.read_csv("Project 1 Data.csv")
 
 
 #STEP 2: displays data distrubution 
-sns.countplot(df, x = "Step")
-plt.show()
-
 # Create a figure and a 3D axis
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
