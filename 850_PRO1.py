@@ -214,10 +214,9 @@ real_data = [[9.375, 3.0625, 1.51],
         [9.4, 3, 1.3]]
 real_data = pd.DataFrame(real_data, columns=['X', 'Y', 'Z'])
 scaled_r_data = scaler.transform(real_data)
-j = pd.DataFrame(scaled_r_data, columns=['X', 'Y', 'Z'])
+j = pd.DataFrame(scaled_r_data, columns=real_data.columns)    
 
 real_step = best_m1.predict(j)
-
 
 print("predicted steps:",real_step)
 
